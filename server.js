@@ -27,7 +27,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: 'http://localhost:3001', // <-- location of the react app were connecting to
+    origin: 'http://localhost:3000', // <-- location of the react app were connecting to
     credentials: true,
   })
 );
@@ -106,15 +106,15 @@ app.post('/postBlogPost', (req, res) => {
 });
 
 app.get('/getPosts', (req, res) => {
-  console.log('getting posts');
-  console.log(req.query);
+  console.log('getting posts...');
+  // console.log(req.query);
   const key = req.query;
   //   const value = req.query.value;
   //   const { key, value } = {req.query.key,;
   return Post.find({ ['category']: key['category'] })
     .sort({ timeStamp: -1 })
     .exec(function (err, entries) {
-      console.log(entries);
+      // console.log(entries);
       return res.end(JSON.stringify(entries));
     });
 });
@@ -124,7 +124,7 @@ app.get('/getAllPosts', (req, res) => {
   return Post.find()
     .sort({ timeStamp: -1 })
     .exec(function (err, entries) {
-      console.log(entries);
+      // console.log(entries);
       return res.end(JSON.stringify(entries));
     });
 });
@@ -145,33 +145,70 @@ app.delete(`/delete/:id`, (req, res) => {
   });
 });
 
-app.put(`/update/:id`, (req, res) => {
+app.put(`/update/:id/:id`, (req, res) => {
   console.log('updating in server');
   console.log(req.body);
   const post = req.body.blogPost;
+  const newPost = req.body.newBlogPost;
   //need to find out what the req.body will look like
   const id = Number(req.params.id);
-
-  // try {
-  console.log(post._id);
-
-  return Post.findByIdAndUpdate(
-    post._id,
+  console.log(typeof mongoose.Types.ObjectId(post._id));
+  Post.findByIdAndUpdate(
+    mongoose.Types.ObjectId(post._id),
     {
-      title: post.title,
-      category: post.category,
-      description: post.description,
-      picture: post.picture,
-      video: post.video,
-      link: post.link,
-      timeStamp: post.timeStamp,
+      title: newPost.title,
+      category: newPost.category,
+      description: newPost.description,
+      picture: newPost.picture,
+      video: newPost.video,
+      link: newPost.link,
+      timeStamp: newPost.timeStamp,
     },
-    (err, entry) => {
+    { new: true },
+    (err, updatedEntry) => {
       if (err) {
         console.log(err);
+      } else {
+        console.log({ updatedEntry });
       }
     }
   );
+
+  // // try {
+  // console.log(post.id);
+
+  // const filter = { id: post.id };
+  // const update = {
+  //   $set: {
+  //     title: post.title,
+  //     category: post.category,
+  //     description: post.description,
+  //     picture: post.picture,
+  //     video: post.video,
+  //     link: post.link,
+  //     timeStamp: post.timeStamp,
+  //   },
+  // };
+  // const options = { returnOriginal: false };
+  // return Post.findOneAndUpdate(filter, update, options);
+
+  // return Post.findByIdAndUpdate(
+  //   post.id,
+  //   {
+  //     title: post.title,
+  //     category: post.category,
+  //     description: post.description,
+  //     picture: post.picture,
+  //     video: post.video,
+  //     link: post.link,
+  //     timeStamp: post.timeStamp,
+  //   },
+  //   (err, entry) => {
+  //     if (err) {
+  //       console.log(err);
+  //     }
+  //   }
+  // );
 });
 
 /// datascience
