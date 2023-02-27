@@ -10,6 +10,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const app = express();
 const Post = require('./blogPost');
+const PictureFolder = require('./postPictureFolder');
 //----------------------------------------- END OF IMPORTS---------------------------------------------------
 mongoose.connect(
   'mongodb+srv://matvi_mykula:this1works@cluster0.o1l2bk9.mongodb.net/Blog?retryWrites=true&w=majority',
@@ -84,15 +85,15 @@ app.post('/logout', function (req, res, next) {
 
 app.post('/postBlogPost', (req, res) => {
   console.log('posting message');
-  console.log(req.body);
-  console.log(req.body.blogPost.category);
+  // console.log(req.body);
+  // console.log(req.body.blogPost.category);
   const post = new Post({
     id: req.body.blogPost.id,
     category: req.body.blogPost.category,
     title: req.body.blogPost.title,
     description: req.body.blogPost.description,
-    picture: req.body.blogPost.picture,
-    video: req.body.blogPost.video,
+    // picture: req.body.blogPost.picture,
+    // video: req.body.blogPost.video,
     link: req.body.blogPost.link,
     timeStamp: req.body.blogPost.timeStamp,
   });
@@ -101,8 +102,23 @@ app.post('/postBlogPost', (req, res) => {
       console.log(err);
     }
   });
-  res.json({ mmessage: req.body });
+  res.json({ message: req.body });
   console.log('post logged');
+});
+
+app.post('/postPictureFolder', (req, res) => {
+  console.log('posting picture folder');
+  const pictureFolder = new PictureFolder({
+    id: req.body.blogPost.id,
+    entries: req.body.blogPost.picture,
+  });
+  pictureFolder.save((err) => {
+    if (err) {
+      console.log(err);
+    }
+  });
+  res.json({ message: req.body });
+  console.log('picture folder logged');
 });
 
 app.get('/getPosts', (req, res) => {
@@ -159,8 +175,8 @@ app.put(`/update/:id/:id`, (req, res) => {
       title: newPost.title,
       category: newPost.category,
       description: newPost.description,
-      picture: newPost.picture,
-      video: newPost.video,
+      // picture: newPost.picture,
+      // video: newPost.video,
       link: newPost.link,
       timeStamp: newPost.timeStamp,
     },

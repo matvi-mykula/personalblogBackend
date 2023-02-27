@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 const post = new mongoose.Schema({
-  id: Number,
+  id: String,
   category: String,
   title: String,
   description: String,
-  picture: String,
-  video: String,
+  // picture: String,
+  // video: String,
   link: String,
   timeStamp: Date,
 });
