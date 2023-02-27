@@ -146,19 +146,22 @@ app.get('/getAllPosts', (req, res) => {
 });
 
 app.delete(`/delete/:id`, (req, res) => {
-  console.log('delete in server');
-  console.log(req.params);
-  const id = Number(req.params.id);
-  console.log(id);
-  return Post.deleteOne({ id: id }, (err, result) => {
-    console.log(result);
-    if (err) {
-      console.log(err);
-      res.sendStatus(500);
-      return;
-    }
-    res.sendStatus(200);
-  });
+  try {
+    console.log('delete in server');
+    console.log(req.params);
+    const id = req.params.id;
+    console.log(id);
+    Post.deleteOne({ id: id });
+    PictureFolder.deleteOne({ id: id });
+
+    res
+      .status(200)
+      .json({ message: `Deleted post and picture folder for ${id}` });
+    client.close();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'An error occurred' });
+  }
 });
 
 app.put(`/update/:id/:id`, (req, res) => {
