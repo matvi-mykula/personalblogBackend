@@ -10,7 +10,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const app = express();
 const Post = require('./blogPost');
-const PictureFolder = require('./postPictureFolder');
+const PictureFolder = require('./postPictureFolder.tsx');
 //----------------------------------------- END OF IMPORTS---------------------------------------------------
 mongoose.connect(
   'mongodb+srv://matvi_mykula:this1works@cluster0.o1l2bk9.mongodb.net/Blog?retryWrites=true&w=majority',
@@ -123,7 +123,7 @@ app.post('/postPictureFolder', (req, res) => {
 
 app.get('/getPosts', (req, res) => {
   console.log('getting posts...');
-  // console.log(req.query);
+  console.log(req.query);
   const key = req.query;
   //   const value = req.query.value;
   //   const { key, value } = {req.query.key,;
@@ -133,6 +133,15 @@ app.get('/getPosts', (req, res) => {
       // console.log(entries);
       return res.end(JSON.stringify(entries));
     });
+});
+app.get('/getPostContent', (req, res) => {
+  const key = req.query;
+  return PictureFolder.find({ ['id']: key['id'] }).exec(function (
+    err,
+    entries
+  ) {
+    return res.prependOnceListener(JSON.stringify(entries));
+  });
 });
 
 app.get('/getAllPosts', (req, res) => {
@@ -168,10 +177,13 @@ app.put(`/update/:id/:id`, (req, res) => {
   console.log('updating in server');
   console.log(req.body);
   const post = req.body.blogPost;
+  const pictureFolder = req.body.pictureFolder;
   const newPost = req.body.newBlogPost;
+
   //need to find out what the req.body will look like
   const id = Number(req.params.id);
   console.log(typeof mongoose.Types.ObjectId(post._id));
+
   Post.findByIdAndUpdate(
     mongoose.Types.ObjectId(post._id),
     {
@@ -188,46 +200,24 @@ app.put(`/update/:id/:id`, (req, res) => {
       if (err) {
         console.log(err);
       } else {
-        console.log({ updatedEntry });
+        console.log('post update', { updatedEntry });
       }
     }
   );
-
-  // // try {
-  // console.log(post.id);
-
-  // const filter = { id: post.id };
-  // const update = {
-  //   $set: {
-  //     title: post.title,
-  //     category: post.category,
-  //     description: post.description,
-  //     picture: post.picture,
-  //     video: post.video,
-  //     link: post.link,
-  //     timeStamp: post.timeStamp,
-  //   },
-  // };
-  // const options = { returnOriginal: false };
-  // return Post.findOneAndUpdate(filter, update, options);
-
-  // return Post.findByIdAndUpdate(
-  //   post.id,
-  //   {
-  //     title: post.title,
-  //     category: post.category,
-  //     description: post.description,
-  //     picture: post.picture,
-  //     video: post.video,
-  //     link: post.link,
-  //     timeStamp: post.timeStamp,
-  //   },
-  //   (err, entry) => {
-  //     if (err) {
-  //       console.log(err);
-  //     }
-  //   }
-  // );
+  PictureFolder.findByIdAndUpdate(
+    mongoose.Types.ObjectId(pictureFolder._id),
+    {
+      picture: newPost.picture,
+    },
+    { new: true },
+    (err, updatedEntry) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('content update', { updatedEntry });
+      }
+    }
+  );
 });
 
 /// datascience
