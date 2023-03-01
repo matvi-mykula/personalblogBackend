@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
-require('dotenv').config(); /// helps hide mongoose credentials
+require('dotenv').config(
+  '/Users/matvimykula/Documents/Projects/ODIN Project/personalBlog/personalblogBackend/MongoCredentials.env'
+); /// helps hide mongoose credentials
 
 const ObjectId = require('mongodb').ObjectId;
 const express = require('express');
@@ -14,8 +16,10 @@ const app = express();
 const Post = require('./blogPost');
 const ContentFolder = require('./postContentFolder.tsx');
 //----------------------------------------- END OF IMPORTS---------------------------------------------------
+console.log(process.env.MONGO_USERNAME);
 mongoose.connect(
-  `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.mongodb.net/${process.env.MONGO_DBNAME}`,
+  `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.o1l2bk9.mongodb.net/${process.env.MONGO_DBNAME}?retryWrites=true&w=majority`,
+
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -135,7 +139,7 @@ app.get('/getPosts', (req, res) => {
   return Post.find({ ['category']: key['category'] })
     .sort({ timeStamp: -1 })
     .exec(function (err, entries) {
-      // console.log(entries);
+      console.log(entries);
       return res.end(JSON.stringify(entries));
     });
 });
@@ -155,12 +159,17 @@ app.get('/getPostContent', (req, res) => {
 
 app.get('/getAllPosts', (req, res) => {
   console.log('getting all posts');
-  return Post.find()
-    .sort({ timeStamp: -1 })
-    .exec(function (err, entries) {
-      // console.log(entries);
-      return res.end(JSON.stringify(entries));
-    });
+  try {
+    return Post.find()
+      .sort({ timeStamp: -1 })
+      .exec(function (err, entries) {
+        console.log(entries);
+        console.log('all post data aquired');
+        return res.end(JSON.stringify(entries));
+      });
+  } catch {
+    console.log('something went wrong');
+  }
 });
 
 app.delete(`/delete/:id`, (req, res) => {
