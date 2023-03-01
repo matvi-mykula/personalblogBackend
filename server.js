@@ -10,10 +10,10 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const app = express();
 const Post = require('./blogPost');
-const PictureFolder = require('./postPictureFolder.tsx');
+const ContentFolder = require('./postContentFolder.tsx');
 //----------------------------------------- END OF IMPORTS---------------------------------------------------
 mongoose.connect(
-  'mongodb+srv://matvi_mykula:this1works@cluster0.o1l2bk9.mongodb.net/Blog?retryWrites=true&w=majority',
+  'mongodb+srv://matvi_mykula:this1works@cluster0.o1l2bk9.mongodb.net/Blog2?retryWrites=true&w=majority',
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -106,13 +106,16 @@ app.post('/postBlogPost', (req, res) => {
   console.log('post logged');
 });
 
-app.post('/postPictureFolder', (req, res) => {
-  console.log('posting picture folder');
-  const pictureFolder = new PictureFolder({
-    id: req.body.blogPost.id,
-    entries: req.body.blogPost.picture,
+app.post('/postContentFolder', (req, res) => {
+  console.log('posting content folder');
+  console.log(req.body.folderData.id);
+  const contentFolder = new ContentFolder({
+    id: req.body.folderData.id,
+    pictures: req.body.folderData.picture,
+    videos: req.body.folderData.video,
+    links: req.body.folderData.link,
   });
-  pictureFolder.save((err) => {
+  contentFolder.save((err) => {
     if (err) {
       console.log(err);
     }
@@ -135,12 +138,14 @@ app.get('/getPosts', (req, res) => {
     });
 });
 app.get('/getPostContent', (req, res) => {
+  console.log(req.query);
   const key = req.query;
-  return PictureFolder.find({ ['id']: key['id'] }).exec(function (
+  return ContentFolder.find({ ['id']: key['id'] }).exec(function (
     err,
     entries
   ) {
-    return res.prependOnceListener(JSON.stringify(entries));
+    console.log(entries);
+    return res.end(JSON.stringify(entries));
   });
 });
 
@@ -204,10 +209,12 @@ app.put(`/update/:id/:id`, (req, res) => {
       }
     }
   );
-  PictureFolder.findByIdAndUpdate(
+  ContentFolder.findByIdAndUpdate(
     mongoose.Types.ObjectId(pictureFolder._id),
     {
-      picture: newPost.picture,
+      pictures: newPost.picture,
+      videos: newPost.video,
+      links: newPost.link,
     },
     { new: true },
     (err, updatedEntry) => {
