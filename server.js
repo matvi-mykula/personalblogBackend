@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+require('dotenv').config(); /// helps hide mongoose credentials
+
 const ObjectId = require('mongodb').ObjectId;
 const express = require('express');
 const cors = require('cors');
@@ -13,7 +15,7 @@ const Post = require('./blogPost');
 const ContentFolder = require('./postContentFolder.tsx');
 //----------------------------------------- END OF IMPORTS---------------------------------------------------
 mongoose.connect(
-  'mongodb+srv://matvi_mykula:this1works@cluster0.o1l2bk9.mongodb.net/Blog2?retryWrites=true&w=majority',
+  `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.mongodb.net/${process.env.MONGO_DBNAME}`,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -138,6 +140,7 @@ app.get('/getPosts', (req, res) => {
     });
 });
 app.get('/getPostContent', (req, res) => {
+  console.log('getting post content');
   console.log(req.query);
   const key = req.query;
   return ContentFolder.find({ ['id']: key['id'] }).exec(function (
@@ -145,6 +148,7 @@ app.get('/getPostContent', (req, res) => {
     entries
   ) {
     console.log(entries);
+    console.log('post content aquired');
     return res.end(JSON.stringify(entries));
   });
 });
