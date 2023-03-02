@@ -114,12 +114,12 @@ app.post('/postBlogPost', (req, res) => {
 
 app.post('/postContentFolder', (req, res) => {
   console.log('posting content folder');
-  console.log(req.body.folderData.id);
+  console.log(req.body.folderData);
   const contentFolder = new ContentFolder({
     id: req.body.folderData.id,
-    pictures: req.body.folderData.picture,
-    videos: req.body.folderData.video,
-    links: req.body.folderData.link,
+    pictures: req.body.folderData.pictures,
+    videos: req.body.folderData.videos,
+    links: req.body.folderData.links,
   });
   contentFolder.save((err) => {
     if (err) {
@@ -147,14 +147,18 @@ app.get('/getPostContent', (req, res) => {
   console.log('getting post content');
   console.log(req.query);
   const key = req.query;
-  return ContentFolder.find({ ['id']: key['id'] }).exec(function (
-    err,
-    entries
-  ) {
-    console.log(entries);
-    console.log('post content aquired');
-    return res.end(JSON.stringify(entries));
-  });
+  try {
+    return ContentFolder.find({ ['id']: key['id'] }).exec(function (
+      err,
+      entries
+    ) {
+      console.log(entries[0]);
+      console.log('post content aquired');
+      return res.end(JSON.stringify(entries[0]));
+    });
+  } catch {
+    console.log('something went wrong');
+  }
 });
 
 app.get('/getAllPosts', (req, res) => {
@@ -195,15 +199,17 @@ app.put(`/update/:id/:id`, (req, res) => {
   console.log('updating in server');
   console.log(req.body);
   const post = req.body.blogPost;
-  const pictureFolder = req.body.pictureFolder;
+  const contentFolder = req.body.contentFolder;
   const newPost = req.body.newBlogPost;
 
   //need to find out what the req.body will look like
   const id = Number(req.params.id);
-  console.log(typeof mongoose.Types.ObjectId(post._id));
+  console.log(post._id);
+  console.log({ contentFolder });
+  console.log({ newPost });
 
-  Post.findByIdAndUpdate(
-    mongoose.Types.ObjectId(post._id),
+  Post.findOneAndUpdate(
+    { id: post.id },
     {
       title: newPost.title,
       category: newPost.category,
@@ -214,27 +220,27 @@ app.put(`/update/:id/:id`, (req, res) => {
       timeStamp: newPost.timeStamp,
     },
     { new: true },
-    (err, updatedEntry) => {
+    (err, updatedPost) => {
       if (err) {
         console.log(err);
       } else {
-        console.log('post update', { updatedEntry });
+        console.log('post update', { updatedPost });
       }
     }
   );
-  ContentFolder.findByIdAndUpdate(
-    mongoose.Types.ObjectId(pictureFolder._id),
+  ContentFolder.findOneAndUpdate(
+    { id: contentFolder.id },
     {
       pictures: newPost.picture,
       videos: newPost.video,
       links: newPost.link,
     },
     { new: true },
-    (err, updatedEntry) => {
+    (err, updatedContent) => {
       if (err) {
         console.log(err);
       } else {
-        console.log('content update', { updatedEntry });
+        console.log('content update', { updatedContent });
       }
     }
   );
