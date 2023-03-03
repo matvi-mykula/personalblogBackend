@@ -11,6 +11,6 @@ const contentFolder = new mongoose.Schema({
   id: String,
   pictures: { type: Array, of: String },
   videos: { type: Array, of: String },
-  link: { type: Array, of: String },
+  links: { type: Array, of: String },
 });
 module.exports = mongoose.model('ContentFolder', contentFolder);

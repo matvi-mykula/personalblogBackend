@@ -100,7 +100,7 @@ app.post('/postBlogPost', (req, res) => {
     description: req.body.blogPost.description,
     // picture: req.body.blogPost.picture,
     // video: req.body.blogPost.video,
-    link: req.body.blogPost.link,
+    // link: req.body.blogPost.link,
     timeStamp: req.body.blogPost.timeStamp,
   });
   post.save((err) => {
@@ -115,6 +115,7 @@ app.post('/postBlogPost', (req, res) => {
 app.post('/postContentFolder', (req, res) => {
   console.log('posting content folder');
   console.log(req.body.folderData);
+  console.log(req.body.folderData.links);
   const contentFolder = new ContentFolder({
     id: req.body.folderData.id,
     pictures: req.body.folderData.pictures,
@@ -182,13 +183,25 @@ app.delete(`/delete/:id`, (req, res) => {
     console.log(req.params);
     const id = req.params.id;
     console.log(id);
-    Post.deleteOne({ id: id });
-    PictureFolder.deleteOne({ id: id });
-
-    res
-      .status(200)
-      .json({ message: `Deleted post and picture folder for ${id}` });
-    client.close();
+    Post.deleteOne({ id: id })
+      .then(() => {
+        console.log('post deleted');
+      })
+      .catch((error) => {
+        console.log(error);
+        return;
+      });
+    ContentFolder.deleteOne({ id: id })
+      .then(() => {
+        console.log('content deleted');
+        res
+          .status(200)
+          .json({ message: `Deleted post and picture folder for ${id}` });
+      })
+      .catch((error) => {
+        console.log(error);
+        return;
+      });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'An error occurred' });
@@ -203,7 +216,7 @@ app.put(`/update/:id/:id`, (req, res) => {
   const newPost = req.body.newBlogPost;
 
   //need to find out what the req.body will look like
-  const id = Number(req.params.id);
+  const id = req.params.id;
   console.log(post._id);
   console.log({ contentFolder });
   console.log({ newPost });
@@ -216,7 +229,7 @@ app.put(`/update/:id/:id`, (req, res) => {
       description: newPost.description,
       // picture: newPost.picture,
       // video: newPost.video,
-      link: newPost.link,
+      // link: newPost.link,
       timeStamp: newPost.timeStamp,
     },
     { new: true },
@@ -231,9 +244,9 @@ app.put(`/update/:id/:id`, (req, res) => {
   ContentFolder.findOneAndUpdate(
     { id: contentFolder.id },
     {
-      pictures: newPost.picture,
-      videos: newPost.video,
-      links: newPost.link,
+      pictures: contentFolder.pictures,
+      videos: contentFolder.videos,
+      links: contentFolder.links,
     },
     { new: true },
     (err, updatedContent) => {

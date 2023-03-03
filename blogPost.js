@@ -6,7 +6,7 @@ const post = new mongoose.Schema({
   description: String,
   // picture: String,
   // video: String,
-  link: String,
+  // link: String,
   timeStamp: Date,
 });
 
