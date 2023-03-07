@@ -44,12 +44,13 @@ const allowedOrigins = [
   'http://localhost:3000',
   'https://personalblog-gzts.vercel.app/',
 ];
-app.use(
-  cors({
-    origin: allowedOrigins, // <-- location of the react app were connecting to
-    credentials: true,
-  })
-);
+app.use(cors());
+// app.use(
+//   cors({
+//     origin: allowedOrigins, // <-- location of the react app were connecting to
+//     credentials: true,
+//   })
+// );
 /// allows request from anything
 //
 app.use(
