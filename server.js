@@ -40,9 +40,13 @@ mongoose
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://personalblog-gzts.vercel.app/',
+];
 app.use(
   cors({
-    origin: 'http://localhost:3000', // <-- location of the react app were connecting to
+    origin: allowedOrigins, // <-- location of the react app were connecting to
     credentials: true,
   })
 );
