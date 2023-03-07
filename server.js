@@ -17,7 +17,7 @@ const Post = require('./blogPost');
 const ContentFolder = require('./postContentFolder.tsx');
 const User = require('./user.js');
 //----------------------------------------- END OF IMPORTS---------------------------------------------------
-console.log(process.env.MONGO_USERNAME);
+const port = 8080;
 mongoose.connect(
   `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.o1l2bk9.mongodb.net/${process.env.MONGO_DBNAME}?retryWrites=true&w=majority`,
 
@@ -283,30 +283,30 @@ app.get('/stats', (error, response, body) => {
 
 //----------------------------------------- END OF ROUTES---------------------------------------------------
 //Start Server
-app.listen(4000, () => {
-  console.log('Server Has Started');
+app.listen(port, () => {
+  console.log('Server Has Started on ' + port);
 });
 
 //////////// i used this to hash the manually made password
-async function hashPassword() {
-  console.log('hashing');
+// async function hashPassword() {
+//   console.log('hashing');
 
-  try {
-    // Find a user by their username
-    const user = await User.findOne({ user: 'Admin' });
-    console.log({ user });
+//   try {
+//     // Find a user by their username
+//     const user = await User.findOne({ user: 'Admin' });
+//     console.log({ user });
 
-    // Generate a new hashed password
-    const hashedPassword = await bcrypt.hash(user.password, 10);
+//     // Generate a new hashed password
+//     const hashedPassword = await bcrypt.hash(user.password, 10);
 
-    // Update the user's password in the database
-    await User.updateOne({ username: 'Admin' }, { password: hashedPassword });
-    console.log('Password hash updated successfully');
-  } catch (err) {
-    console.error(err);
-  } finally {
-    return;
-  }
-}
+//     // Update the user's password in the database
+//     await User.updateOne({ username: 'Admin' }, { password: hashedPassword });
+//     console.log('Password hash updated successfully');
+//   } catch (err) {
+//     console.error(err);
+//   } finally {
+//     return;
+//   }
+// }
 
-hashPassword();
+// hashPassword();
