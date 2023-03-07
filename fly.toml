@@ -1,6 +1,6 @@
-# fly.toml file generated for young-frog-2584 on 2023-03-06T19:02:00-08:00
+# fly.toml file generated for quiet-wind-39 on 2023-03-07T12:24:40-08:00
 
-app = "young-frog-2584"
+app = "quiet-wind-39"
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = []
@@ -9,8 +9,6 @@ processes = []
 
 [experimental]
   auto_rollback = true
-
-
 
 [[services]]
   http_checks = []

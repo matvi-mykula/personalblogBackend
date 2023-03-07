@@ -40,12 +40,11 @@ mongoose
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(
-  cors({
-    origin: 'http://localhost:3000' | 'https://personalblog-gzts.vercel.app', // <-- location of the react app were connecting to
-    credentials: true,
-  })
-);
+app.use(cors()); /// allows request from anything
+// {
+//   origin: 'http://localhost:3000' | 'https://personalblog-gzts.vercel.app', // <-- location of the react app were connecting to
+//   credentials: true,
+// }
 app.use(
   session({
     secret: 'secretcode',
