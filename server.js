@@ -15,6 +15,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const Post = require('./blogPost');
 const ContentFolder = require('./postContentFolder.tsx');
+const User = require('./user.js');
 //----------------------------------------- END OF IMPORTS---------------------------------------------------
 console.log(process.env.MONGO_USERNAME);
 mongoose.connect(
@@ -38,38 +39,44 @@ app.use(
     credentials: true,
   })
 );
-// app.use(
-//   session({
-//     secret: 'secretcode',
-//     resave: true,
-//     saveUninitialized: true,
-//   })
-// );
-// app.use(cookieParser('secretcode'));
-// app.use(passport.initialize());
-// app.use(passport.session());
-// require('./passportConfig')(passport);
+app.use(
+  session({
+    secret: 'secretcode',
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+app.use(cookieParser('secretcode'));
+app.use(passport.initialize());
+app.use(passport.session());
+require('./passportConfig')(passport);
 
 //----------------------------------------- END OF MIDDLEWARE---------------------------------------------------
 
-// Routes
+//////////////      Routes      ///////////////
 
-// app.post('/login', (req, res, next) => {
-//   passport.authenticate('local', (err, user, info) => {
-//     if (err) throw err;
-//     if (!user) res.send('No User Exists');
-//     else {
-//       req.logIn(user, (err) => {
-//         if (err) throw err;
-//         console.log('succesfully logged in');
-//         res.send(req.user);
-//         // res.send(req.user);
-//         console.log(req.user);
-//         // res.redirect('/profile');
-//       });
-//     }
-//   })(req, res, next);
-// });
+app.post('/login', (req, res, next) => {
+  console.log('login initiated');
+  console.log(req.body);
+  console.log(req.body);
+  passport.authenticate('local', (err, user, info) => {
+    console.log({ user });
+    if (err) throw err;
+    if (!user) {
+      console.log(info);
+      res.send('No User Exists');
+    } else {
+      req.logIn(user, (err) => {
+        if (err) throw err;
+        console.log('succesfully logged in');
+        res.send(req.user);
+        console.log(req.user);
+        // res.redirect('/profile');
+      });
+    }
+  })(req, res, next);
+});
+//////////////////////////
 
 app.get('/user', (req, res) => {
   res.send(req.user); // The req.user stores the entire user that has been authenticated inside of it.
@@ -114,8 +121,8 @@ app.post('/postBlogPost', (req, res) => {
 
 app.post('/postContentFolder', (req, res) => {
   console.log('posting content folder');
-  console.log(req.body.folderData);
-  console.log(req.body.folderData.links);
+  // console.log(req.body.folderData);
+  // console.log(req.body.folderData.links);
   const contentFolder = new ContentFolder({
     id: req.body.folderData.id,
     pictures: req.body.folderData.pictures,
@@ -133,7 +140,7 @@ app.post('/postContentFolder', (req, res) => {
 
 app.get('/getPosts', (req, res) => {
   console.log('getting posts...');
-  console.log(req.query);
+  // console.log(req.query);
   const key = req.query;
   //   const value = req.query.value;
   //   const { key, value } = {req.query.key,;
@@ -146,14 +153,14 @@ app.get('/getPosts', (req, res) => {
 });
 app.get('/getPostContent', (req, res) => {
   console.log('getting post content');
-  console.log(req.query);
+  // console.log(req.query);
   const key = req.query;
   try {
     return ContentFolder.find({ ['id']: key['id'] }).exec(function (
       err,
       entries
     ) {
-      console.log(entries[0]);
+      // console.log(entries[0]);
       console.log('post content aquired');
       return res.end(JSON.stringify(entries[0]));
     });
@@ -168,7 +175,7 @@ app.get('/getAllPosts', (req, res) => {
     return Post.find()
       .sort({ timeStamp: -1 })
       .exec(function (err, entries) {
-        console.log(entries);
+        // console.log(entries);
         console.log('all post data aquired');
         return res.end(JSON.stringify(entries));
       });
@@ -180,7 +187,7 @@ app.get('/getAllPosts', (req, res) => {
 app.delete(`/delete/:id`, (req, res) => {
   try {
     console.log('delete in server');
-    console.log(req.params);
+    // console.log(req.params);
     const id = req.params.id;
     console.log(id);
     Post.deleteOne({ id: id })
@@ -210,7 +217,7 @@ app.delete(`/delete/:id`, (req, res) => {
 
 app.put(`/update/:id/:id`, (req, res) => {
   console.log('updating in server');
-  console.log(req.body);
+  // console.log(req.body);
   const post = req.body.blogPost;
   const contentFolder = req.body.contentFolder;
   const newPost = req.body.newBlogPost;
@@ -279,3 +286,27 @@ app.get('/stats', (error, response, body) => {
 app.listen(4000, () => {
   console.log('Server Has Started');
 });
+
+//////////// i used this to hash the manually made password
+async function hashPassword() {
+  console.log('hashing');
+
+  try {
+    // Find a user by their username
+    const user = await User.findOne({ user: 'Admin' });
+    console.log({ user });
+
+    // Generate a new hashed password
+    const hashedPassword = await bcrypt.hash(user.password, 10);
+
+    // Update the user's password in the database
+    await User.updateOne({ username: 'Admin' }, { password: hashedPassword });
+    console.log('Password hash updated successfully');
+  } catch (err) {
+    console.error(err);
+  } finally {
+    return;
+  }
+}
+
+hashPassword();
