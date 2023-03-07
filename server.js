@@ -40,11 +40,14 @@ mongoose
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors()); /// allows request from anything
-// {
-//   origin: 'http://localhost:3000' | 'https://personalblog-gzts.vercel.app', // <-- location of the react app were connecting to
-//   credentials: true,
-// }
+app.use(
+  cors({
+    origin: 'http://localhost:3000' | 'https://personalblog-gzts.vercel.app', // <-- location of the react app were connecting to
+    credentials: true,
+  })
+);
+/// allows request from anything
+//
 app.use(
   session({
     secret: 'secretcode',
@@ -152,9 +155,9 @@ app.get('/getPosts', (req, res) => {
   //   const { key, value } = {req.query.key,;
   return Post.find({ ['category']: key['category'] })
     .sort({ timeStamp: -1 })
-    .exec(function (err, entries) {
-      console.log(entries);
-      return res.end(JSON.stringify(entries));
+    .exec()
+    .then((results) => {
+      res.end(JSON.stringify(results));
     });
 });
 app.get('/getPostContent', (req, res) => {
@@ -162,17 +165,29 @@ app.get('/getPostContent', (req, res) => {
   // console.log(req.query);
   const key = req.query;
   try {
-    return ContentFolder.find({ ['id']: key['id'] }).exec(function (
-      err,
-      entries
-    ) {
-      // console.log(entries[0]);
-      console.log('post content aquired');
-      return res.end(JSON.stringify(entries[0]));
-    });
-  } catch {
-    console.log('something went wrong');
+    contentFolder
+      .find({ ['id']: key['id'] })
+      .exec()
+      .then((results) => {
+        return res.end(JSON.stringify(results[0]));
+      })
+      .catch((err) => {
+        console.log(error);
+      });
+  } catch (err) {
+    console.log(err);
   }
+  //   return ContentFolder.find({ ['id']: key['id'] }).exec(function (
+  //     err,
+  //     entries
+  //   ) {
+  //     // console.log(entries[0]);
+  //     console.log('post content aquired');
+  //     return res.end(JSON.stringify(entries[0]));
+  //   });
+  // } catch {
+  //   console.log('something went wrong');
+  // }
 });
 
 app.get('/getAllPosts', (req, res) => {
@@ -180,10 +195,9 @@ app.get('/getAllPosts', (req, res) => {
   try {
     return Post.find()
       .sort({ timeStamp: -1 })
-      .exec(function (err, entries) {
-        // console.log(entries);
-        console.log('all post data aquired');
-        return res.end(JSON.stringify(entries));
+      .exec()
+      .then((results) => {
+        return res.end(JSON.stringify(results));
       });
   } catch {
     console.log('something went wrong');
