@@ -18,17 +18,24 @@ const ContentFolder = require('./postContentFolder.tsx');
 const User = require('./user.js');
 //----------------------------------------- END OF IMPORTS---------------------------------------------------
 const port = 8080;
-mongoose.connect(
-  `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.o1l2bk9.mongodb.net/${process.env.MONGO_DBNAME}?retryWrites=true&w=majority`,
+mongoose
+  .connect(
+    `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.o1l2bk9.mongodb.net/${process.env.MONGO_DBNAME}?retryWrites=true&w=majority`
+  )
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((err) => console.error(err));
 
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  },
-  () => {
-    console.log('Mongoose Is Connected');
-  }
-);
+// mongoose.connect(
+//   `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.o1l2bk9.mongodb.net/${process.env.MONGO_DBNAME}?retryWrites=true&w=majority`,
+
+//   {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   },
+//   () => {
+//     console.log('Mongoose Is Connected');
+//   }
+// );
 
 // Middleware
 app.use(bodyParser.json());
@@ -264,21 +271,6 @@ app.put(`/update/:id/:id`, (req, res) => {
       }
     }
   );
-});
-
-/// datascience
-const natural = require('natural');
-
-app.get('/stats', (error, response, body) => {
-  console.log('made it to stats');
-  if (error) {
-    console.log(error);
-    return;
-  }
-  const tokenizer = new natural.WordTokenizer();
-  const tokens = tokenizer.tokenize(body);
-  console.log(tokens);
-  console.log(response);
 });
 
 //----------------------------------------- END OF ROUTES---------------------------------------------------
