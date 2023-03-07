@@ -42,7 +42,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: 'http://localhost:3000' | 'https://personalblog-gzts.vercel.app', // <-- location of the react app were connecting to
+    origin: 'http://localhost:3000', // <-- location of the react app were connecting to
     credentials: true,
   })
 );
@@ -165,8 +165,7 @@ app.get('/getPostContent', (req, res) => {
   // console.log(req.query);
   const key = req.query;
   try {
-    contentFolder
-      .find({ ['id']: key['id'] })
+    ContentFolder.find({ ['id']: key['id'] })
       .exec()
       .then((results) => {
         return res.end(JSON.stringify(results[0]));
@@ -177,17 +176,6 @@ app.get('/getPostContent', (req, res) => {
   } catch (err) {
     console.log(err);
   }
-  //   return ContentFolder.find({ ['id']: key['id'] }).exec(function (
-  //     err,
-  //     entries
-  //   ) {
-  //     // console.log(entries[0]);
-  //     console.log('post content aquired');
-  //     return res.end(JSON.stringify(entries[0]));
-  //   });
-  // } catch {
-  //   console.log('something went wrong');
-  // }
 });
 
 app.get('/getAllPosts', (req, res) => {
