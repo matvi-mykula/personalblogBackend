@@ -1,21 +1,39 @@
-const mongoose = require('mongoose');
-require('dotenv').config(
-  '/Users/matvimykula/Documents/Projects/ODIN Project/personalBlog/personalblogBackend/MongoCredentials.env'
-); /// helps hide mongoose credentials
+// const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-const ObjectId = require('mongodb').ObjectId;
-const express = require('express');
-const cors = require('cors');
-const passport = require('passport');
-const passportLocal = require('passport-local').Strategy;
-const cookieParser = require('cookie-parser');
-const bcrypt = require('bcryptjs');
-const session = require('express-session');
-const bodyParser = require('body-parser');
+import dotenv from 'dotenv';
+dotenv.config();
+
+// const ObjectId = require('mongodb').ObjectId;
+// const express = require('express');
+// const cors = require('cors');
+// const passport = require('passport');
+// const passportLocal = require('passport-local').Strategy;
+// const cookieParser = require('cookie-parser');
+// const bcrypt = require('bcryptjs');
+// const session = require('express-session');
+// const bodyParser = require('body-parser');
+// const app = express();
+// const Post = require('./blogPost');
+// const ContentFolder = require('./postContentFolder.tsx');
+// const User = require('./user.js');
+
+import { ObjectId } from 'mongodb';
+import express from 'express';
+import cors from 'cors';
+import passport from 'passport';
+import { Strategy as passportLocal } from 'passport-local';
+import cookieParser from 'cookie-parser';
+import bcrypt from 'bcryptjs';
+import session from 'express-session';
+import bodyParser from 'body-parser';
+import { createResponse } from './services.js';
+import { Post } from './blogPost.js';
+import { ContentFolder } from './postContentFolder.js';
+// import { User } from './user.js';
+
 const app = express();
-const Post = require('./blogPost');
-const ContentFolder = require('./postContentFolder.tsx');
-const User = require('./user.js');
+
 //----------------------------------------- END OF IMPORTS---------------------------------------------------
 const port = 8080;
 mongoose
@@ -63,7 +81,9 @@ app.use(
 app.use(cookieParser('secretcode'));
 app.use(passport.initialize());
 app.use(passport.session());
-require('./passportConfig')(passport);
+// import { passportConfig } from './passportConfig.js';
+
+// passportConfig(passport);
 
 //----------------------------------------- END OF MIDDLEWARE---------------------------------------------------
 

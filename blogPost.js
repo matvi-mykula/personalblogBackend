@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const post = new mongoose.Schema({
   id: String,
   category: String,
@@ -10,7 +10,9 @@ const post = new mongoose.Schema({
   timeStamp: Date,
 });
 
-module.exports = mongoose.model('Post', post);
+// module.exports = mongoose.model('Post', post);
+
+export { post as Post };
 
 // const postData = {
 //   id: 1,

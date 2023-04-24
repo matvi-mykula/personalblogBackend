@@ -9,26 +9,53 @@ module.exports = function (passport) {
   passport.use(
     new localStrategy((user, password, done) => {
       console.log({ user, password });
-      User.findOne({ user: user }, (err, user) => {
-        console.log({ user });
-        console.log('getting into local strategy');
-        if (err) throw err;
-        if (!user) {
-          console.log('no user found');
-          return done(null, false);
-        }
-        console.log([{ password }, user.password]);
-        bcrypt.compare(password, user.password, (err, result) => {
-          if (err) throw err;
-          if (result === true) {
-            console.log('correct password');
-            return done(null, user);
-          } else {
-            console.log('incorrect password');
+
+      User.findOne({ user: user })
+        .then((user) => {
+          console.log({ user });
+          console.log('getting into local strategy');
+          // if (err) throw err;
+          if (!user) {
+            console.log('no user found');
             return done(null, false);
           }
+          console.log([{ password }, user.password]);
+          bcrypt.compare(password, user.password, (err, result) => {
+            if (err) throw err;
+            if (result === true) {
+              console.log('correct password');
+              return done(null, user);
+            } else {
+              console.log('incorrect password');
+              return done(null, false);
+            }
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          return;
         });
-      });
+
+      // User.findOne({ user: user }, (err, user) => {
+      //   console.log({ user });
+      //   console.log('getting into local strategy');
+      //   if (err) throw err;
+      //   if (!user) {
+      //     console.log('no user found');
+      //     return done(null, false);
+      //   }
+      //   console.log([{ password }, user.password]);
+      //   bcrypt.compare(password, user.password, (err, result) => {
+      //     if (err) throw err;
+      //     if (result === true) {
+      //       console.log('correct password');
+      //       return done(null, user);
+      //     } else {
+      //       console.log('incorrect password');
+      //       return done(null, false);
+      //     }
+      //   });
+      // });
     })
   );
 
