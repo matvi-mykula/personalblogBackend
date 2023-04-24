@@ -183,23 +183,40 @@ app.get('/getPosts', (req, res) => {
     .exec()
     .then((results) => {
       res.end(JSON.stringify(results));
+    })
+    .catch((err) => {
+      console.log(err);
+      // res.end(JSON.stringify('no response'));
     });
 });
 app.get('/getPostContent', (req, res) => {
   console.log('getting post content');
   // console.log(req.query);
   const key = req.query;
+  //// validate query
+  if (!key.id.length) {
+    return res.json(createResponse(false, 400, 'no query'));
+  }
+
   try {
     ContentFolder.find({ ['id']: key['id'] })
       .exec()
       .then((results) => {
-        return res.end(JSON.stringify(results[0]));
+        console.log(results);
+        if (results.length < 1) {
+          return res.json(createResponse(false, 400, 'no data'));
+        }
+        return res.json(createResponse(true, 200, results[0]));
       })
       .catch((err) => {
-        console.log(error);
+        console.log(err);
+        const response = createResponse(false, 400, 'query failed');
+        return res.json(response);
       });
   } catch (err) {
     console.log(err);
+    const response = createResponse(false, 400, 'request failed');
+    return res.json(response);
   }
 });
 
