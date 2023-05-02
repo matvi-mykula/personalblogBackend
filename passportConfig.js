@@ -1,9 +1,9 @@
-const bcrypt = require('bcryptjs');
+import bcrypt from 'bcryptjs';
 //do I need to add user module just for admin support
-const localStrategy = require('passport-local').Strategy;
-const User = require('./user.js');
+import { Strategy as localStrategy } from 'passport-local';
+import { User } from './user.js';
 
-module.exports = function (passport) {
+const passportStrat = (passport) => {
   console.log('getting into passport');
   // console.log(passport);
   passport.use(
@@ -35,27 +35,6 @@ module.exports = function (passport) {
           console.log(error);
           return;
         });
-
-      // User.findOne({ user: user }, (err, user) => {
-      //   console.log({ user });
-      //   console.log('getting into local strategy');
-      //   if (err) throw err;
-      //   if (!user) {
-      //     console.log('no user found');
-      //     return done(null, false);
-      //   }
-      //   console.log([{ password }, user.password]);
-      //   bcrypt.compare(password, user.password, (err, result) => {
-      //     if (err) throw err;
-      //     if (result === true) {
-      //       console.log('correct password');
-      //       return done(null, user);
-      //     } else {
-      //       console.log('incorrect password');
-      //       return done(null, false);
-      //     }
-      //   });
-      // });
     })
   );
 
@@ -73,3 +52,5 @@ module.exports = function (passport) {
     });
   });
 };
+
+export { passportStrat };

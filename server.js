@@ -79,8 +79,11 @@ app.use(
   })
 );
 app.use(cookieParser('secretcode'));
+import { passportStrat } from './passportConfig.js';
+passportStrat(passport);
 app.use(passport.initialize());
 app.use(passport.session());
+
 // import { passportConfig } from './passportConfig.js';
 
 // passportConfig(passport);

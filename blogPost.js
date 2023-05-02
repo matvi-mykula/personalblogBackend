@@ -10,9 +10,9 @@ const post = new mongoose.Schema({
   timeStamp: Date,
 });
 
-// module.exports = mongoose.model('Post', post);
+const Post = mongoose.model('Post', post);
 
-export { post as Post };
+export { Post };
 
 // const postData = {
 //   id: 1,
