@@ -147,13 +147,15 @@ app.post('/postBlogPost', (req, res) => {
     // link: req.body.blogPost.link,
     timeStamp: req.body.blogPost.timeStamp,
   });
-  post.save((err) => {
-    if (err) {
+  post
+    .save()
+    .then(() => {
+      res.json({ message: req.body });
+      console.log('post logged');
+    })
+    .catch((err) => {
       console.log(err);
-    }
-  });
-  res.json({ message: req.body });
-  console.log('post logged');
+    });
 });
 
 app.post('/postContentFolder', (req, res) => {
@@ -166,29 +168,35 @@ app.post('/postContentFolder', (req, res) => {
     videos: req.body.folderData.videos,
     links: req.body.folderData.links,
   });
-  contentFolder.save((err) => {
-    if (err) {
-      console.log(err);
-    }
+  contentFolder.save().then(() => {
+    res.json({ message: req.body });
+    console.log('picture folder logged');
   });
-  res.json({ message: req.body });
-  console.log('picture folder logged');
 });
 
 app.get('/getPosts', (req, res) => {
   console.log('getting posts...');
-  // console.log(req.query);
+  console.log(req.query);
+
+  if (Object.keys(req.query).length === 0) {
+    return res.json(
+      createResponse(false, 500, 'internal server error/ no query')
+    );
+  }
+
   const key = req.query;
+  /// validate query
   //   const value = req.query.value;
   //   const { key, value } = {req.query.key,;
   return Post.find({ ['category']: key['category'] })
     .sort({ timeStamp: -1 })
     .exec()
     .then((results) => {
-      res.end(JSON.stringify(results));
+      return res.json(createResponse(true, 200, results));
     })
     .catch((err) => {
       console.log(err);
+      return res.json(createResponse(false, 500, 'error'));
       // res.end(JSON.stringify('no response'));
     });
 });
@@ -292,15 +300,14 @@ app.put(`/update/:id/:id`, (req, res) => {
       // link: newPost.link,
       timeStamp: newPost.timeStamp,
     },
-    { new: true },
-    (err, updatedPost) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('post update', { updatedPost });
-      }
-    }
-  );
+    { new: true }
+  )
+    .then((updatedPost) => {
+      console.log('post update', { updatedPost });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
   ContentFolder.findOneAndUpdate(
     { id: contentFolder.id },
     {
@@ -308,15 +315,14 @@ app.put(`/update/:id/:id`, (req, res) => {
       videos: contentFolder.videos,
       links: contentFolder.links,
     },
-    { new: true },
-    (err, updatedContent) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('content update', { updatedContent });
-      }
-    }
-  );
+    { new: true }
+  )
+    .then((updatedContent) => {
+      console.log(updatedContent);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
 //----------------------------------------- END OF ROUTES---------------------------------------------------
