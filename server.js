@@ -101,13 +101,12 @@ app.post('/login', (req, res, next) => {
     if (err) throw err;
     if (!user) {
       console.log(info);
-      res.send('No User Exists');
+      res.send(createResponse(false, 400, 'No User Exists'));
     } else {
       req.logIn(user, (err) => {
         if (err) throw err;
         console.log('succesfully logged in');
-        res.send(req.user);
-        console.log(req.user);
+        res.json(createResponse(true, 200, req.user));
         // res.redirect('/profile');
       });
     }
